@@ -1,0 +1,5 @@
+<?php
+
+define('GLPI_URL',     "http://path/to/glpi/");
+define('API_USER',     "glpi");
+define('API_PASSWORD', "glpi");
