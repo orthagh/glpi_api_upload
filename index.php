@@ -1,3 +1,7 @@
+<?php
+   $rand = mt_rand();
+?>
+
 <!DOCTYPE html>
 <html lang="fr">
 <head>
@@ -33,7 +37,7 @@
       <input type="text" name="document_name" id="docname" value="My document uploaded by api">
 
       <label for="file">File:</label>
-      <input type="file" name="filename[]" id="file">
+      <input type="file" name="filename<?php echo $rand ?>[]" id="file">
 
       <input type="submit" name="submit">
    </form>

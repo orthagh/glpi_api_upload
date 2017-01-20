@@ -1,5 +1,9 @@
 <?php
 
+include_once __DIR__."/index.php";
+echo "<hr>";
+echo "<h2>Return:</h2>";
+
 if (!file_exists(__DIR__.'/vendor/autoload.php')) {
    throw new Exception("No vendor found, please run composer install --no-dev");
 }
@@ -19,55 +23,32 @@ $response = $api_client->get("initSession/", ['auth' => [API_USER, API_PASSWORD]
 $code = $response->getStatusCode();
 $session_token = json_decode( (string) $response->getBody(), true)['session_token'];
 
-
-// retrieve glpi version
-$response = $api_client->get("Config/", ['headers' => [
-                                          'Session-Token' => $session_token]]);
-$code = $response->getStatusCode();
-$config = json_decode( (string) $response->getBody(), true);
-$glpi_version = $config[0]['value'];
-
-
-// define fileupload client
-$fileupload_client = new GuzzleHttp\Client([
-   'base_uri' => trim(GLPI_URL, '/').
-      (version_compare($glpi_version, "9.2") == -1 // if glpi 9.1.x, fileupload is in front folder
-         ? '/front/'
-         : '/ajax/')
-      .'fileupload.php']
-);
-
+// construct file keys
+$inputname = array_keys($_FILES)[0];
+$filename  = $_FILES[$inputname]['name'][0];
+$filepath  = $_FILES[$inputname]['tmp_name'][0];
 
 // let's proceed a document addition
-
-// 1st, send file to glpi ajax/fileupload (copy to glpi _tmp folder)
-$response = $fileupload_client->post('', [
-   'multipart' => [
-      [
-         'name'     => 'name',
-         'contents' => 'filename'
-      ],[
-         'name'     => 'filename[]',
-         'contents' => file_get_contents($_FILES['filename']['tmp_name'][0]),
-         'filename' => $_FILES['filename']['name'][0]
-      ]
-]]);
-$body_fileupload    = json_decode( (string) $response->getBody(), true);
-$message_fileupload = array_shift($body_fileupload);
-
-if (isset($message_fileupload[0]['error'])) {
-   throw new Exception($message_fileupload[0]['error']);
-}
-
-// 2nd add document object
 $response = $api_client->post('Document/', [
    'headers' => [
       'Session-Token' => $session_token
    ],
-   'json'   => [
-      'input' => [
-         'name'      => $_POST['document_name'],
-         '_filename' => [$message_fileupload[0]['name']]
+   'multipart' => [
+      [
+         'name'     => 'uploadManifest',
+         'contents' => json_encode([
+            'input' => [
+               'name'       => $_POST['document_name'],
+               '_filename'  => [$filename],
+            ]
+         ])
+      ],[
+         'name'     => $inputname.'[]',
+         'contents' => file_get_contents($filepath),
+         'filename' => $filename
       ]
-   ]
-]);
+]]);
+$document_return = json_decode( (string) $response->getBody(), true);
+echo "status code: ".$response->getStatusCode()."<br>";
+var_dump($document_return);
+
