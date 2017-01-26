@@ -23,7 +23,6 @@ See [upload.php](upload.php) code for details.
 $ curl -X POST \
 -H 'Content-Type: multipart/form-data' \
 -H "Session-Token: 83af7e620c83a50a18d3eac2f6ed05a3ca0bea62" \
--H "App-Token: f7g3csp8mgatg5ebc5elnazakw20i9fyev1qopya7" \
 -F 'uploadManifest={"input": {"name": "Uploaded document", "_filename" : ["file.txt"]}};type=application/json' \
 -F 'filename[0]=@file.txt' \
 'http://path/to/glpi/apirest.php/Document/'
