@@ -1,4 +1,4 @@
-# File Upload wit GLPI API example
+# File Upload with GLPI API
 
 This reposity aims to provide a working example of an upload through the Rest API of [GLPI](https://github.com/glpi-project/glpi).
 We are using [PHP Guzzle library](http://docs.guzzlephp.org/en/latest/) to send http queries.
