@@ -4,6 +4,11 @@ This reposity aims to provide a working example of an upload through the Rest AP
 We are using [PHP Guzzle library](http://docs.guzzlephp.org/en/latest/) to send http queries.
 See [upload.php](upload.php) code for details.
 
+## Prerequisites
+
+* GLPI 9.2 (with api enabled)
+* PHP >= 5.6
+
 ## Installation
 
 * Clone this repository on your computer.
