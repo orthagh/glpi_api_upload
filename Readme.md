@@ -19,7 +19,7 @@ See [upload.php](upload.php) code for details.
 
 ## Additional Curl example
 
-```
+```bash
 $ curl -X POST \
 -H 'Content-Type: multipart/form-data' \
 -H "Session-Token: 83af7e620c83a50a18d3eac2f6ed05a3ca0bea62" \
