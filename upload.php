@@ -13,17 +13,29 @@ if (!file_exists(__DIR__.'/config.inc.php')) {
 }
 require_once __DIR__.'/config.inc.php';
 
+$base_uri = trim(GLPI_URL, '/');
 
 // define api client
-$api_client = new GuzzleHttp\Client(['base_uri' => trim(GLPI_URL, '/').'/apirest.php/']);
-
+$api_client = new GuzzleHttp\Client(['base_uri' => "$base_uri/apirest.php/"]);
 
 // connect to api
 $response = $api_client->get("initSession/", ['auth' => [API_USER, API_PASSWORD]]);
-$code = $response->getStatusCode();
-$session_token = json_decode( (string) $response->getBody(), true)['session_token'];
+if ($response->getStatusCode() != 200
+    || !$session_token = json_decode( (string) $response->getBody(), true)['session_token']) {
+   throw new Exception("Cannot connect to api, check your config.inc.php file");
+}
+
+// check input
+if (!isset($_POST['document_name'])) {
+   die("No document name provided");
+}
+if (count($_FILES) == 0) {
+   die("No file provided");
+}
+// we may need more file control here, but for the example purpose, i skip
 
 // construct file keys
+$docname   = $_POST['document_name'];
 $inputname = array_keys($_FILES)[0];
 $filename  = $_FILES[$inputname]['name'][0];
 $filepath  = $_FILES[$inputname]['tmp_name'][0];
@@ -34,21 +46,33 @@ $response = $api_client->post('Document/', [
       'Session-Token' => $session_token
    ],
    'multipart' => [
+      // the document part
       [
          'name'     => 'uploadManifest',
          'contents' => json_encode([
             'input' => [
-               'name'       => $_POST['document_name'],
+               'name'       => $docname,
                '_filename'  => [$filename],
             ]
          ])
-      ],[
+      ],
+      // the FILE part
+      [
          'name'     => $inputname.'[]',
          'contents' => file_get_contents($filepath),
          'filename' => $filename
       ]
 ]]);
 $document_return = json_decode( (string) $response->getBody(), true);
-echo "status code: ".$response->getStatusCode()."<br>";
-var_dump($document_return);
 
+// display return
+if ($response->getStatusCode() != 201) {
+   throw new Exception("Error when sending file/document to api");
+}
+
+Echo "Document created:
+      <a target='_blank'
+         href='$base_uri/front/document.form.php?id=".$document_return['id']."'>
+         $docname
+      </a>";
+var_dump(json_decode( (string) $response->getBody()));
