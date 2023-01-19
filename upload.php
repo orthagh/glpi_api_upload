@@ -81,4 +81,6 @@ Echo "Document created:
          href='$base_uri/front/document.form.php?id=".$document_return['id']."'>
          $docname
       </a>";
+echo "<pre>";
 var_dump(json_decode( (string) $response->getBody()));
+echo "</pre>";
