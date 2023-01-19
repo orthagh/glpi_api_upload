@@ -1,5 +1,6 @@
 <?php
 
-define('GLPI_URL',     "http://path/to/glpi/");
-define('API_USER',     "glpi");
-define('API_PASSWORD', "glpi");
+define('GLPI_URL',      "http://path/to/glpi/");
+define('API_APP_TOKEN', "`Application token (app_token)` of GLPI API client");
+define('API_USER',      "glpi");
+define('API_PASSWORD',  "glpi");
