@@ -19,7 +19,12 @@ $base_uri = trim(GLPI_URL, '/');
 $api_client = new GuzzleHttp\Client(['base_uri' => "$base_uri/apirest.php/"]);
 
 // connect to api
-$response = $api_client->get("initSession/", ['auth' => [API_USER, API_PASSWORD]]);
+$response = $api_client->get("initSession/", [
+   'headers' => [
+      'App-Token' => API_APP_TOKEN,
+   ],
+   'auth' => [API_USER, API_PASSWORD],
+]);
 if ($response->getStatusCode() != 200
     || !$session_token = json_decode( (string) $response->getBody(), true)['session_token']) {
    throw new Exception("Cannot connect to api, check your config.inc.php file");
@@ -43,7 +48,8 @@ $filepath  = $_FILES[$inputname]['tmp_name'][0];
 // let's proceed a document addition
 $response = $api_client->post('Document/', [
    'headers' => [
-      'Session-Token' => $session_token
+      'App-Token'     => API_APP_TOKEN,
+      'Session-Token' => $session_token,
    ],
    'multipart' => [
       // the document part
